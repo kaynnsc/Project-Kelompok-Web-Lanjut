@@ -1,18 +1,33 @@
-// src/pages/Login.js
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { loginUser } from '../../services/api';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    console.log({ email, password });
+    setError('');
+    try {
+      // Panggil fungsi login dari api.js
+      const res = await loginUser({ email, password });
+      // Simpan token ke localStorage
+      localStorage.setItem('token', res.data.token);
+      // Arahkan ke dashboard
+      navigate('/dashboard');
+    } catch (err) {
+      setError('Email atau password salah. Silakan coba lagi.');
+      console.error(err);
+    }
   };
 
   return (
     <div className="container mt-5">
-      <h2>Login</h2>
+      <h2>Login Mahasiswa</h2>
+      {error && <div className="alert alert-danger">{error}</div>}
       <form onSubmit={handleLogin}>
         <div className="mb-3">
           <label>Email</label>
