@@ -4,10 +4,10 @@ const Peserta = require('../models/Peserta');
 
 router.post('/register', async (req, res) => {
   try {
-    const { nama, email, nim, event } = req.body;
+    const { nama, email, nim } = req.body;
 
     // Enhanced validation
-    if (!nama || !email || !nim || !event) {
+    if (!nama || !email || !nim) {
       return res.status(400).json({ message: 'Semua field wajib diisi' });
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -22,7 +22,7 @@ router.post('/register', async (req, res) => {
     const exists = await Peserta.findOne({ $or: [{ email }, { nim }] });
     if (exists) return res.status(400).json({ message: 'Email/NIM sudah terdaftar' });
 
-    const peserta = new Peserta({ nama, email, nim, event });
+    const peserta = new Peserta({ nama, email, nim });
     await peserta.save();
     res.status(201).json(peserta);
   } catch (err) {
