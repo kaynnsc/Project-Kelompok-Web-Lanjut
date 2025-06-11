@@ -1,33 +1,31 @@
-// src/services/api.js
 import axios from 'axios';
 
-// Membuat instance axios dengan base URL backend
 const apiClient = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: 'http://localhost:5000/api', 
 });
 
-// 🔐 AUTHENTICATION
+// auth
 export const registerUser = (data) => apiClient.post('/auth/register', data);
 export const loginUser = (data) => apiClient.post('/auth/login', data);
 
-// 📄 SERTIFIKAT IMUNISASI
-export const createCertificate = (token, data) =>
-  apiClient.post('/sertifikat', data, {
+// sertifikat
+export const createEventCertificate = (token, data) =>
+  apiClient.post('/sertifikat-event', data, {
     headers: { Authorization: `Bearer ${token}` },
   });
 
-export const getCertificatesByUserId = (token) =>
-  apiClient.get('/sertifikat/me', {
+export const getEventCertificatesByUserId = (token) =>
+  apiClient.get('/sertifikat-event/me', {
     headers: { Authorization: `Bearer ${token}` },
   });
 
-export const generateCertificatePDF = (token, certificateId) =>
-  apiClient.get(`/sertifikat/generate/${certificateId}`, {
+export const generateEventCertificatePDF = (token, certificateId) =>
+  apiClient.get(`/sertifikat-event/generate/${certificateId}`, {
     headers: { Authorization: `Bearer ${token}` },
     responseType: 'blob', // Penting untuk download file
   });
 
-// 🧑 USER PROFILE
+// profile
 export const getUserProfile = (token) =>
   apiClient.get('/user/profile', {
     headers: { Authorization: `Bearer ${token}` },

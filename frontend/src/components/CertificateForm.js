@@ -1,14 +1,15 @@
-// src/components/CertificateForm.js
 import React, { useState } from 'react';
-import { createCertificate } from '../../services/api';
+import { createEventCertificate } from '../../services/api'; // Menggunakan fungsi API yang baru
 import { useNavigate } from 'react-router-dom';
 
 function CertificateForm() {
   const [formData, setFormData] = useState({
-    nama: '',
-    nik: '',
-    jenis_vaksin: '',
-    tanggal_pemberian: ''
+    nama_peserta: '',
+    nim: '',
+    nama_event: '',
+    penyelenggara: '',
+    tanggal_event: '',
+    peran: 'Peserta', // Default role
   });
 
   const [loading, setLoading] = useState(false);
@@ -26,18 +27,13 @@ function CertificateForm() {
     setError('');
 
     try {
-      // Kirim data ke backend
-      const res = await createCertificate(token, formData);
+      await createEventCertificate(token, formData);
 
-      // Tampilkan pesan sukses dan navigasi ke dashboard atau download PDF
-      alert('Sertifikat berhasil dibuat!');
-      navigate('/dashboard');
-
-      // Optional: langsung generate PDF jika ada endpoint generate
-      // window.open(`${process.env.REACT_APP_API_URL}/sertifikat/generate/${res.data._id}`);
+      alert('Sertifikat event berhasil dibuat!');
+      navigate('/dashboard'); 
 
     } catch (err) {
-      setError('Gagal menyimpan sertifikat. Silakan coba lagi.');
+      setError('Gagal menyimpan sertifikat. Pastikan Anda sudah login dan coba lagi.');
       console.error(err);
     } finally {
       setLoading(false);
@@ -46,64 +42,46 @@ function CertificateForm() {
 
   return (
     <div className="card shadow-sm p-4 mb-5 bg-body rounded">
-      <h3 className="mb-4">Isi Data Imunisasi</h3>
+      <h3 className="mb-4">Isi Data Sertifikat Event</h3>
       {error && <div className="alert alert-danger">{error}</div>}
 
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
-          <label className="form-label">Nama Lengkap</label>
-          <input
-            type="text"
-            name="nama"
-            className="form-control"
-            value={formData.nama}
-            onChange={handleChange}
-            required
-          />
+          <label className="form-label">Nama Peserta</label>
+          <input type="text" name="nama_peserta" className="form-control" value={formData.nama_peserta} onChange={handleChange} required />
         </div>
 
         <div className="mb-3">
-          <label className="form-label">NIK</label>
-          <input
-            type="text"
-            name="nik"
-            className="form-control"
-            value={formData.nik}
-            onChange={handleChange}
-            required
-          />
+          <label className="form-label">NIM</label>
+          <input type="text" name="nim" className="form-control" value={formData.nim} onChange={handleChange} required />
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Jenis Vaksin</label>
-          <input
-            type="text"
-            name="jenis_vaksin"
-            className="form-control"
-            value={formData.jenis_vaksin}
-            onChange={handleChange}
-            required
-          />
+          <label className="form-label">Nama Event</label>
+          <input type="text" name="nama_event" className="form-control" value={formData.nama_event} onChange={handleChange} required />
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Tanggal Pemberian</label>
-          <input
-            type="date"
-            name="tanggal_pemberian"
-            className="form-control"
-            value={formData.tanggal_pemberian}
-            onChange={handleChange}
-            required
-          />
+          <label className="form-label">Penyelenggara Event</label>
+          <input type="text" name="penyelenggara" className="form-control" value={formData.penyelenggara} onChange={handleChange} required />
+        </div>
+        
+        <div className="mb-3">
+          <label className="form-label">Peran</label>
+          <select name="peran" className="form-select" value={formData.peran} onChange={handleChange}>
+            <option value="Peserta">Peserta</option>
+            <option value="Panitia">Panitia</option>
+            <option value="Pembicara">Pembicara</option>
+          </select>
         </div>
 
-        <button
-          type="submit"
-          className="btn btn-success w-100"
-          disabled={loading}
-        >
-          {loading ? 'Menyimpan...' : 'Simpan & Generate PDF'}
+        <div className="mb-3">
+          <label className="form-label">Tanggal Event</label>
+          <input type="date" name="tanggal_event" className="form-control" value={formData.tanggal_event} onChange={handleChange} required />
+        </div>
+
+        <button type="submit" className="btn btn-success w-100" disabled={loading}>
+          {loading ? 'Menyimpan...' : 'Simpan & Buat Sertifikat'}
         </button>
       </form>
     </div>
