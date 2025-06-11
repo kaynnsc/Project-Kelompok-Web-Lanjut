@@ -15,7 +15,6 @@ router.get('/sertifikat/:id', async (req, res) => {
     const htmlTemplate = fs.readFileSync(path.join(__dirname, '../templates/template.html'), 'utf-8');
     const htmlContent = htmlTemplate
       .replace('{{nama}}', peserta.nama)
-      .replace('{{event}}', peserta.event)
       .replace('{{tanggal}}', new Date().toLocaleDateString('id-ID'));
 
     const browser = await puppeteer.launch();
