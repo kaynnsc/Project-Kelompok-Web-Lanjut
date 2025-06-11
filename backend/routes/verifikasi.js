@@ -11,23 +11,19 @@ function adminAuth(req, res, next) {
     return res.status(401).json({ message: "Authorization required" });
   }
 
-  // decode base64 dari header
   const base64Credentials = authHeader.split(" ")[1];
-  const credentials = Buffer.from(base64Credentials, "base64").toString(
-    "ascii"
-  );
+  const credentials = Buffer.from(base64Credentials, "base64").toString("ascii");
   const [username, password] = credentials.split(":");
 
-  // cek apakah username & password cocok di admins
   const admin = admins.find(
-    (a) => a.username === username && a.password === password
+    (a) => a.username === username && a.password === password && a.role === "admin"
   );
 
   if (!admin) {
     return res.status(403).json({ message: "Forbidden: invalid credentials" });
   }
 
-  // lanjutkan ke route berikutnya
+  req.admin = admin; // Store admin info
   next();
 }
 
@@ -38,9 +34,7 @@ router.get("/pendaftar", adminAuth, async (req, res) => {
     res.json(semua);
   } catch (error) {
     console.error("Error get pendaftar:", error);
-    res
-      .status(500)
-      .json({ message: "Server error saat mengambil data pendaftar" });
+    res.status(500).json({ message: "Server error saat mengambil data pendaftar" });
   }
 });
 

@@ -4,15 +4,33 @@
   <meta charset="UTF-8">
   <title>Sertifikat</title>
   <style>
-    body { text-align: center; font-family: sans-serif; padding: 100px; }
-    h1 { font-size: 40px; }
-    p { font-size: 20px; }
+    body { 
+      text-align: center; 
+      font-family: Arial, sans-serif; 
+      padding: 50px; 
+      background-color: #f9f9f9;
+    }
+    .certificate {
+      border: 5px solid #000;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 { font-size: 40px; color: #2c3e50; }
+    h2 { font-size: 30px; color: #34495e; }
+    p { font-size: 20px; color: #7f8c8d; }
+    .date { font-size: 16px; color: #95a5a6; }
   </style>
 </head>
 <body>
-  <h1>SERTIFIKAT</h1>
-  <p>Diberikan kepada:</p>
-  <h2>{{nama}}</h2>
-  <p>Atas partisipasinya dalam event <strong>{{event}}</strong></p>
+  <div class="certificate">
+    <h1>SERTIFIKAT</h1>
+    <p>Diberikan kepada:</p>
+    <h2>{{nama}}</h2>
+    <p>Atas partisipasinya dalam event <strong>{{event}}</strong></p>
+    <p class="date">Tanggal Penerbitan: {{tanggal}}</p>
+  </div>
 </body>
 </html>
