@@ -1,70 +1,48 @@
-// src/pages/Login.js
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { loginUser } from '../services/api';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+const handleLogin = async (e) => {
+  e.preventDefault();
+  setError('');
 
-    try {
-      // Kirim permintaan login ke backend
-      const res = await axios.post('/api/auth/login', { email, password });
+  try {
+    console.log("--- DATA DIKIRIM DARI FRONTEND ---");
+    console.log("Email yang akan dikirim:", email);
+    console.log("Password yang akan dikirim:", password);
 
-      // Simpan token di localStorage
-      localStorage.setItem('token', res.data.token);
-
-      // Tampilkan notifikasi sukses
-      toast.success('Login berhasil!', { autoClose: 1500 });
-
-      // Arahkan ke dashboard setelah 1.5 detik
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 1500);
-    } catch (err) {
-      // Tampilkan error jika login gagal
-      toast.error(err.response?.data?.message || 'Login gagal. Periksa email atau password.');
+    const res = await loginUser({ email, password });
+    
+    localStorage.setItem('token', res.data.token);
+    navigate('/dashboard');
+  }
+    catch (err) {
+      setError('Email atau password salah. Silakan coba lagi.');
+      console.error(err);
     }
   };
 
   return (
     <div className="container mt-5">
-      <h2>Login</h2>
+      <h2>Login Mahasiswa</h2>
+      {error && <div className="alert alert-danger">{error}</div>}
       <form onSubmit={handleLogin}>
         <div className="mb-3">
           <label>Email</label>
-          <input
-            type="email"
-            className="form-control"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+          <input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} required />
         </div>
         <div className="mb-3">
           <label>Password</label>
-          <input
-            type="password"
-            className="form-control"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required />
         </div>
         <button type="submit" className="btn btn-primary">Login</button>
       </form>
-
-      <p className="mt-3">
-        Belum punya akun? <a href="/register">Daftar di sini</a>
-      </p>
-
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
     </div>
   );
 }
