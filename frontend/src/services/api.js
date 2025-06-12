@@ -1,36 +1,57 @@
 import axios from 'axios';
 
+// Konfigurasi dasar
 const apiClient = axios.create({
   baseURL: 'http://localhost:5000/api',
-});
-
-const getAuthHeaders = (token) => ({
-  headers: { 'x-auth-token': token },
-});
-
-const config = {
   headers: {
     'Content-Type': 'application/json',
   },
+});
+
+// Helper function untuk auth
+const getAuthHeader = (token) => {
+  if (!token) {
+    throw new Error('Token tidak tersedia');
+  }
+  return {
+    headers: {
+      'x-auth-token': token,
+    },
+  };
 };
 
-export const registerUser = (data) => apiClient.post('/auth/register', data, config);
-export const loginUser = (data) => apiClient.post('/auth/login', data, config);
+// Auth
+export const registerUser = (data) => apiClient.post('/auth/register', data);
+export const loginUser = (data) => apiClient.post('/auth/login', data);
 
+// User
+export const getUserProfile = (token) => apiClient.get('/user/profile', getAuthHeader(token));
+
+// Event Certificate
 export const createEventCertificate = (token, data) =>
-  apiClient.post('/sertifikat-event', data, { ...getAuthHeaders(token), ...config });
+  apiClient.post('/sertifikat-event', data, getAuthHeader(token));
 
 export const getEventCertificatesByUserId = (token) =>
-  apiClient.get('/sertifikat-event/me', getAuthHeaders(token));
+  apiClient.get('/sertifikat-event/me', getAuthHeader(token));
 
-export const generateCertificatePDF = (token, certificateId) => {
-  return apiClient.get(`/sertifikat-event/${certificateId}/pdf`, {
-    headers: { 'x-auth-token': token },
+export const generateCertificatePDF = (token, certificateId) =>
+  apiClient.get(`/sertifikat-event/${certificateId}/pdf`, {
+    ...getAuthHeader(token),
     responseType: 'blob',
   });
-};
 
-export const getUserProfile = (token) =>
-  apiClient.get('/user/profile', getAuthHeaders(token));
+// Tambahkan interceptor jika mau (opsional)
+apiClient.interceptors.request.use((config) => {
+  console.log('Request sedang dikirim:', config.url);
+  return config;
+});
 
-export default apiClient;
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error('Error dari API:', error.message);
+    return Promise.reject(error);
+  }
+);
+
+// Tidak perlu export default karena semua fungsi sudah export named
