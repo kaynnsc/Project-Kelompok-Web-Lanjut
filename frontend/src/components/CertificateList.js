@@ -1,8 +1,4 @@
-// src/components/CertificateList.js
 import React from 'react';
-
-// Komponen ini menerima 'certificates' sebagai properti (prop)
-// dari halaman Dashboard.
 function CertificateList({ certificates }) {
 
   // Jika tidak ada data sertifikat, tampilkan pesan.
@@ -18,13 +14,13 @@ function CertificateList({ certificates }) {
         {certificates.map((cert, idx) => (
           <li key={idx} className="list-group-item d-flex justify-content-between align-items-center">
             <div>
-              {/* Menampilkan data dari array dummy */}
+              {/* data dari array dummy */}
               <strong>{cert.jenis_vaksin}</strong>
               <br />
               <small>Tanggal: {cert.tanggal_pemberian}</small>
             </div>
             <div>
-              {/* Tombol Lihat: Mengarahkan ke file PDF di folder public */}
+              {/* lihat sertif */}
               <a 
                 href="/contoh-sertifikat.pdf" 
                 target="_blank" 
@@ -34,7 +30,7 @@ function CertificateList({ certificates }) {
                 Lihat
               </a>
               
-              {/* Tombol Download: Memicu unduhan file PDF yang sama */}
+              {/* download */}
               <a 
                 href="/contoh-sertifikat.pdf" 
                 download="Sertifikat-Contoh.pdf"

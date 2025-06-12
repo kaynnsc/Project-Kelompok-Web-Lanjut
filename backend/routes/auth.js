@@ -1,5 +1,5 @@
 const express = require('express');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs'); 
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
@@ -7,26 +7,27 @@ const router = express.Router();
 
 router.post('/register', async (req, res) => {
   try {
-    const { nama, nim, email, password } = req.body;
+    const { name, nim, email, password } = req.body;
 
     const existingUser = await User.findOne({ $or: [{ email }, { nim }] });
     if (existingUser) {
-      return res.status(400).json({ 
-        error: existingUser.email === email ? 'Email sudah terdaftar' : 'NIM sudah terdaftar' 
+      return res.status(400).json({
+        error: existingUser.email === email ? 'Email sudah terdaftar' : 'NIM sudah terdaftar'
       });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({
-      nama,
+      nama: name,
       nim,
       email,
-      password: hashedPassword
+      password: password 
     });
 
-    await user.save();
+    await user.save(); 
     res.status(201).json({ message: 'Registrasi berhasil, menunggu verifikasi admin' });
+
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Server error' });
   }
 });
@@ -44,19 +45,16 @@ router.post('/login', async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ error: 'Email atau password salah' });
     }
-
-    if (user.status !== 'verified') {
-      return res.status(403).json({ error: 'Akun belum diverifikasi admin' });
-    }
-
+    
     const token = jwt.sign(
       { id: user._id, role: user.role },
-      'secret_key',
+      process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
 
     res.json({ token });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Server error' });
   }
 });

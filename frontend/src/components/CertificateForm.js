@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { createEventCertificate } from '../../services/api'; // Menggunakan fungsi API yang baru
+import { createEventCertificate } from '../services/api'; 
 import { useNavigate } from 'react-router-dom';
 
 function CertificateForm() {

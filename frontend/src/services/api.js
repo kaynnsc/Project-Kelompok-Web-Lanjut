@@ -1,34 +1,36 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: 'http://localhost:5000/api', 
+  baseURL: 'http://localhost:5000/api',
 });
 
-// auth
-export const registerUser = (data) => apiClient.post('/auth/register', data);
-export const loginUser = (data) => apiClient.post('/auth/login', data);
+const getAuthHeaders = (token) => ({
+  headers: { 'x-auth-token': token },
+});
 
-// sertifikat
+const config = {
+  headers: {
+    'Content-Type': 'application/json',
+  },
+};
+
+export const registerUser = (data) => apiClient.post('/auth/register', data, config);
+export const loginUser = (data) => apiClient.post('/auth/login', data, config);
+
 export const createEventCertificate = (token, data) =>
-  apiClient.post('/sertifikat-event', data, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  apiClient.post('/sertifikat-event', data, { ...getAuthHeaders(token), ...config });
 
 export const getEventCertificatesByUserId = (token) =>
-  apiClient.get('/sertifikat-event/me', {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  apiClient.get('/sertifikat-event/me', getAuthHeaders(token));
 
-export const generateEventCertificatePDF = (token, certificateId) =>
-  apiClient.get(`/sertifikat-event/generate/${certificateId}`, {
-    headers: { Authorization: `Bearer ${token}` },
-    responseType: 'blob', // Penting untuk download file
+export const generateCertificatePDF = (token, certificateId) => {
+  return apiClient.get(`/sertifikat-event/${certificateId}/pdf`, {
+    headers: { 'x-auth-token': token },
+    responseType: 'blob',
   });
+};
 
-// profile
 export const getUserProfile = (token) =>
-  apiClient.get('/user/profile', {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  apiClient.get('/user/profile', getAuthHeaders(token));
 
 export default apiClient;

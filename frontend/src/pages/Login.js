@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginUser } from '../../services/api';
+import { loginUser } from '../services/api';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -8,17 +8,21 @@ function Login() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError('');
-    try {
-      // Panggil fungsi login dari api.js
-      const res = await loginUser({ email, password });
-      // Simpan token ke localStorage
-      localStorage.setItem('token', res.data.token);
-      // Arahkan ke dashboard
-      navigate('/dashboard');
-    } catch (err) {
+const handleLogin = async (e) => {
+  e.preventDefault();
+  setError('');
+
+  try {
+    console.log("--- DATA DIKIRIM DARI FRONTEND ---");
+    console.log("Email yang akan dikirim:", email);
+    console.log("Password yang akan dikirim:", password);
+
+    const res = await loginUser({ email, password });
+    
+    localStorage.setItem('token', res.data.token);
+    navigate('/dashboard');
+  }
+    catch (err) {
       setError('Email atau password salah. Silakan coba lagi.');
       console.error(err);
     }
