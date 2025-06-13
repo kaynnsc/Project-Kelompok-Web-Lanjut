@@ -6,7 +6,10 @@ const UserSchema = new mongoose.Schema({
   nim: { type: String, unique: true, required: true },
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
+  // ga perlu pake models admin, soalnya disini sudah bisa ditentuin. Tinggal diubah aja di mongodb untuk rolenya
   role: { type: String, enum: ['user', 'admin'], default: 'user' },
+  // fitur verifikasi
+  status: { type: String, enum: ['unverified', 'verified', 'rejected'], default: 'unverified' },
 });
 
 UserSchema.pre('save', async function (next) {

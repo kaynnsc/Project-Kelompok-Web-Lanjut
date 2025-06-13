@@ -2,10 +2,10 @@ const express = require('express');
 const authenticateToken = require('../middleware/auth');
 const isAdmin = require('../middleware/admin');
 const User = require('../models/User');
-
+const Certificate = require('../models/Certificate'); 
 const router = express.Router();
 
-// Additional admin-specific routes can be added here
+
 router.get('/dashboard', authenticateToken, isAdmin, async (req, res) => {
   try {
     const users = await User.find({ role: 'user' }).select('-password');
