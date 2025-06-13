@@ -1,20 +1,19 @@
 import React, { useState } from 'react';
 import { createEventCertificate } from '../services/api'; 
-import { useNavigate } from 'react-router-dom';
 
-function CertificateForm() {
-  const [formData, setFormData] = useState({
+function CertificateForm({ onCertificateCreated }) { 
+  const initialFormState = {
     nama_peserta: '',
     nim: '',
     nama_event: '',
     penyelenggara: '',
     tanggal_event: '',
-    peran: 'Peserta', // Default role
-  });
+    peran: 'Peserta',
+  };
 
+  const [formData, setFormData] = useState(initialFormState);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const navigate = useNavigate();
   const token = localStorage.getItem('token');
 
   const handleChange = (e) => {
@@ -23,20 +22,39 @@ function CertificateForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
-
-    try {
-      await createEventCertificate(token, formData);
-
-      alert('Sertifikat event berhasil dibuat!');
-      navigate('/dashboard'); 
-
-    } catch (err) {
-      setError('Gagal menyimpan sertifikat. Pastikan Anda sudah login dan coba lagi.');
-      console.error(err);
-    } finally {
-      setLoading(false);
+  
+    // untuk konfirmasi form user
+    const isConfirmed = window.confirm("Apakah form yang anda isi sudah benar?");
+  
+    // jika menekan yes dan ok maka proses akan berlanjut
+    if (isConfirmed) {
+      setLoading(true);
+      setError('');
+  
+      if (!token) {
+        setError('Sesi Anda telah berakhir, silakan login kembali.');
+        setLoading(false);
+        return;
+      }
+  
+      try {
+        await createEventCertificate(token, formData);
+  
+        // pemberitahuan untuk user
+        alert('Pengajuan sertifikat berhasil dibuat!'); 
+  
+        // menggunakan parent untuk me-refresh daftar
+        onCertificateCreated(); 
+  
+        // mengkosongkan form setelah berhasil
+        setFormData(initialFormState);
+  
+      } catch (err) {
+        setError('Gagal menyimpan sertifikat. Pastikan semua data terisi.');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -65,7 +83,7 @@ function CertificateForm() {
           <label className="form-label">Penyelenggara Event</label>
           <input type="text" name="penyelenggara" className="form-control" value={formData.penyelenggara} onChange={handleChange} required />
         </div>
-        
+
         <div className="mb-3">
           <label className="form-label">Peran</label>
           <select name="peran" className="form-select" value={formData.peran} onChange={handleChange}>

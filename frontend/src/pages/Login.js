@@ -1,6 +1,15 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { loginUser } from '../services/api';
+
+// helper function untuk membaca isi token JWT
+function parseJwt(token) {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+}
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -8,21 +17,32 @@ function Login() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-const handleLogin = async (e) => {
-  e.preventDefault();
-  setError('');
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError('');
 
-  try {
-    console.log("--- DATA DIKIRIM DARI FRONTEND ---");
-    console.log("Email yang akan dikirim:", email);
-    console.log("Password yang akan dikirim:", password);
+    try {
+      console.log("--- DATA DIKIRIM DARI FRONTEND ---");
+      console.log("Email yang akan dikirim:", email);
+      console.log("Password yang akan dikirim:", password);
 
-    const res = await loginUser({ email, password });
-    
-    localStorage.setItem('token', res.data.token);
-    navigate('/dashboard');
-  }
-    catch (err) {
+      const res = await loginUser({ email, password });
+      const { token } = res.data;
+      
+      // menyimpan token ke localStorage
+      localStorage.setItem('token', token);
+
+      // decode token untuk mendapatkan role
+      const decodedToken = parseJwt(token);
+      
+      // mengarahkan pengguna berdasarkan role dari token
+      if (decodedToken && decodedToken.role === 'admin') {
+        navigate('/admin'); // mengarahkan ke dasbor admin
+      } else {
+        navigate('/dashboard'); // mengarahkan ke dasbor user biasa
+      }
+
+    } catch (err) {
       setError('Email atau password salah. Silakan coba lagi.');
       console.error(err);
     }
@@ -42,6 +62,11 @@ const handleLogin = async (e) => {
           <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required />
         </div>
         <button type="submit" className="btn btn-primary">Login</button>
+        <div className="text-center mt-3">
+          <p>
+            Belum punya akun? <Link to="/register">Daftar di sini</Link>
+          </p>
+        </div>
       </form>
     </div>
   );

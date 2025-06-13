@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-// Konfigurasi dasar
+// konfigurasi dasar
 const apiClient = axios.create({
   baseURL: 'http://localhost:5000/api',
   headers: {
@@ -8,14 +8,15 @@ const apiClient = axios.create({
   },
 });
 
-// Helper function untuk auth
+// helper function untuk auth
 const getAuthHeader = (token) => {
   if (!token) {
     throw new Error('Token tidak tersedia');
   }
   return {
     headers: {
-      'x-auth-token': token,
+      // standar untuk mengirim token adalah melalui header 'Authorization'
+      'Authorization': `Bearer ${token}`,
     },
   };
 };
@@ -35,12 +36,19 @@ export const getEventCertificatesByUserId = (token) =>
   apiClient.get('/sertifikat-event/me', getAuthHeader(token));
 
 export const generateCertificatePDF = (token, certificateId) =>
-  apiClient.get(`/sertifikat-event/${certificateId}/pdf`, {
+  apiClient.get(`/sertifikat-event/generate/${certificateId}`, { // <-- URL BENAR
     ...getAuthHeader(token),
     responseType: 'blob',
   });
 
-// Tambahkan interceptor jika mau (opsional)
+// Admin: Mengambil semua sertifikat yang pending
+export const getPendingCertificates = (token) => 
+  apiClient.get('/sertifikat-event/pending', getAuthHeader(token));
+
+// Admin: Memverifikasi sertifikat (terima atau tolak)
+export const verifyCertificate = (token, certificateId, status) => 
+  apiClient.post(`/sertifikat-event/verify/${certificateId}`, { status }, getAuthHeader(token));
+
 apiClient.interceptors.request.use((config) => {
   console.log('Request sedang dikirim:', config.url);
   return config;
@@ -53,5 +61,3 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-// Tidak perlu export default karena semua fungsi sudah export named

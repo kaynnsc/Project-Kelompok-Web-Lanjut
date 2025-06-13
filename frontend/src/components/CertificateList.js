@@ -1,51 +1,30 @@
-// src/components/CertificateList.js
-import React, { useEffect, useState } from 'react';
-import { getEventCertificatesByUserId, generateCertificatePDF } from '../services/api';
+import React, { useState } from 'react';
+import { generateCertificatePDF } from '../services/api';
 
-function CertificateList() {
-  const [certificates, setCertificates] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+// ini untuk menerima props dari Dashboard.js
+function CertificateList({ certificates, loading, error }) { 
   const token = localStorage.getItem('token');
-  const [downloadingId, setDownloadingId] = useState(null); // Untuk spinner/download
+  const [downloadingId, setDownloadingId] = useState(null);
 
-  useEffect(() => {
-    const fetchCertificates = async () => {
-      try {
-        const res = await getEventCertificatesByUserId(token);
-        setCertificates(res.data);
-      } catch (err) {
-        setError('Gagal memuat riwayat sertifikat.');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (token) {
-      fetchCertificates();
-    }
-  }, [token]);
-
+  // handling download pdf
   const handleDownloadPDF = async (certificateId) => {
     setDownloadingId(certificateId);
-
     try {
       const response = await generateCertificatePDF(token, certificateId);
-
-      const url = window.URL.createObjectURL(
-        new Blob([response.data], { type: 'application/pdf' })
-      );
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', `sertifikat-event-${certificateId}.pdf`);
       document.body.appendChild(link);
       link.click();
       link.remove();
-
     } catch (err) {
       console.error('Error saat mengunduh PDF:', err);
-      alert('Gagal mengunduh sertifikat PDF. Silakan coba lagi.');
+      if (err.response && err.response.status === 403) {
+        alert('Gagal: Sertifikat ini belum disetujui oleh admin.');
+      } else {
+        alert('Gagal mengunduh sertifikat PDF. Silakan coba lagi.');
+      }
     } finally {
       setDownloadingId(null);
     }
@@ -69,25 +48,29 @@ function CertificateList() {
               className="list-group-item d-flex justify-content-between align-items-center"
             >
               <div>
-                <strong>{cert.nama_event}</strong> {/* Ganti jenis_vaksin jadi nama_event */}
+                <strong>{cert.nama_event}</strong>
                 <br />
-                <small>Tanggal: {new Date(cert.tanggal_event).toLocaleDateString()}</small> {/* Tanggal event */} <br />
-                <small>Peserta: {cert.peserta_nama}</small>
+                <small className="text-muted">Peserta: {cert.nama_peserta}</small>
+                <br />
+                <small className="text-muted">Tanggal: {new Date(cert.tanggal_event).toLocaleDateString('id-ID')}</small>
               </div>
-              <button
-                onClick={() => handleDownloadPDF(cert._id)}
-                className="btn btn-sm btn-primary"
-                disabled={downloadingId === cert._id}
-              >
-                {downloadingId === cert._id ? (
-                  <>
-                    <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-                    Mengunduh...
-                  </>
-                ) : (
-                  'Download PDF'
-                )}
-              </button>
+
+              <div className="d-flex align-items-center">
+                <span className={`badge me-3 ${
+                  cert.status === 'approved' ? 'bg-success' :
+                  cert.status === 'rejected' ? 'bg-danger' : 'bg-warning'
+                }`}>
+                  {cert.status}
+                </span>
+
+                <button
+                  onClick={() => handleDownloadPDF(cert._id)}
+                  className="btn btn-sm btn-primary"
+                  disabled={cert.status !== 'approved' || downloadingId === cert._id}
+                >
+                  {downloadingId === cert._id ? 'Mengunduh...' : 'Unduh PDF'}
+                </button>
+              </div>
             </li>
           ))}
         </ul>
