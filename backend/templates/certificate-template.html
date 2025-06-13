@@ -1,23 +1,160 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Sertifikat</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; }
-    .certificate { width: 100%; height: 100%; padding: 50px; }
-    h1 { font-size: 40px; margin-bottom: 20px; }
-    h2 { font-size: 30px; margin-bottom: 10px; }
-    p { font-size: 16px; margin-bottom: 5px; }
+    /* Mengimpor font dari Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;700&family=Playfair+Display:wght@700&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'EB Garamond', serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #3d3d3d;
+      -webkit-print-color-adjust: exact;
+    }
+
+    .certificate-container {
+      width: 1050px;
+      height: 742px;
+      background-color: #ffffff;
+      border: 1px solid #e0e0e0;
+      padding: 20px;
+      box-sizing: border-box;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Bingkai dekoratif ganda */
+    .certificate-border {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      border: 5px double #c0c0c0;
+    }
+    
+    .certificate-content {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      box-sizing: border-box;
+    }
+
+    .header-text {
+      font-size: 52px;
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin: 0;
+    }
+
+    .subtitle {
+      font-size: 20px;
+      margin-top: 10px;
+      color: #555;
+    }
+
+    .recipient-name {
+      font-size: 48px;
+      font-family: 'Playfair Display', serif;
+      color: #003d5b; /* Biru tua */
+      margin: 35px 0 5px 0;
+    }
+    
+    .nim {
+      font-size: 16px;
+      color: #555;
+      margin-bottom: 35px;
+    }
+
+    .description {
+      font-size: 18px;
+      line-height: 1.6;
+      max-width: 680px;
+      margin-bottom: 40px;
+    }
+    
+    .description strong {
+      font-weight: 700;
+      color: #003d5b;
+    }
+
+    .signature-area {
+      display: flex;
+      justify-content: space-around;
+      width: 90%;
+      margin-top: auto;
+      padding-bottom: 20px;
+    }
+
+    .signature-block {
+      width: 250px;
+      text-align: center;
+    }
+
+    .signature-line {
+      border-bottom: 1px solid #3d3d3d;
+      margin: 45px 0 10px 0;
+    }
+    .signature-block p {
+      margin: 0;
+      font-size: 16px;
+    }
+    .signature-block .title {
+      font-weight: 700;
+    }
+
   </style>
 </head>
 <body>
-  <div class="certificate">
-    <h1>SERTIFIKAT</h1>
-    <h2>Diberikan kepada:</h2>
-    <p><strong><%= nama_peserta %></strong></p>
-    <p>Sebagai <%= peran %> dalam <%= nama_event %></p>
-    <p>Diselenggarakan oleh <%= penyelenggara %> pada <%= tanggal_event %></p>
+  <div class="certificate-container">
+    <div class="certificate-border"></div>
+    <div class="certificate-content">
+      
+      <h1 class="header-text">SERTIFIKAT</h1>
+      <p class="subtitle">Diberikan kepada:</p>
+
+      <h2 class="recipient-name"><%= nama_peserta %></h2>
+      <p class="nim">NIM: <%= nim %></p>
+
+      <p class="description">
+        Telah berpartisipasi sebagai <strong><%= peran %></strong> dalam kegiatan
+        <strong>"<%= nama_event %>"</strong>
+        yang diselenggarakan oleh <strong><%= penyelenggara %></strong> pada tanggal
+        <%= new Date(tanggal_event).toLocaleDateString('id-ID', { dateStyle: 'long' }) %>.
+      </p>
+
+      <div class="signature-area">
+        <div class="signature-block">
+          <div class="signature-line"></div>
+          <p class="title">Ketua Pelaksana</p>
+          <p>(.........................)</p>
+        </div>
+        <div class="signature-block">
+          <div class="signature-line"></div>
+          <p class="title">Dosen Pembina</p>
+          <p>(.........................)</p>
+        </div>
+      </div>
+
+    </div>
   </div>
 </body>
 </html>
