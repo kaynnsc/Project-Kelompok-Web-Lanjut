@@ -24,7 +24,7 @@ router.post('/register', async (req, res) => {
     });
 
     await user.save(); 
-    res.status(201).json({ message: 'Registrasi berhasil, menunggu verifikasi admin' });
+    res.status(201).json({ message: 'Registrasi berhasil' });
 
   } catch (error) {
     console.error(error);
