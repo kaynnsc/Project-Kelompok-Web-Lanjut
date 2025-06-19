@@ -77,6 +77,11 @@ function Register() {
           <input type="password" className="form-control" name="password" value={password} onChange={onChange} required minLength="6" />
         </div>
         <button type="submit" className="btn btn-success">Daftar</button>
+        <div className="text-center mt-3">
+          <p>
+            Sudah punya akun? <Link to="/login">Login di sini</Link>
+          </p>
+        </div>
       </form>
     </div>
   );
