@@ -50,7 +50,7 @@ function Login() {
 
   return (
     <div className="container mt-5">
-      <h2>Login Mahasiswa</h2>
+      <h2>Login Sertifikat Online</h2>
       {error && <div className="alert alert-danger">{error}</div>}
       <form onSubmit={handleLogin}>
         <div className="mb-3">

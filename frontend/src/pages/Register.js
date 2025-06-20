@@ -57,7 +57,7 @@ function Register() {
 
   return (
     <div className="container mt-5">
-      <h2>Daftar Akun Mahasiswa</h2>
+      <h2>Daftar Akun</h2>
       {error && <div className="alert alert-danger">{error}</div>}
       <form onSubmit={handleRegister}>
         <div className="mb-3">
